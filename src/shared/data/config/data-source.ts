@@ -1,14 +1,18 @@
 import { DataSource } from 'typeorm';
-import { ExchangeRate } from '../../../entity/exchange-rate';
-import { TokenBlackList } from '../../../entity/token-black-list';
-import { Transaction } from '../../../entity/transaction';
-import { User } from '../../../entity/user';
-import { UserSchemaCreate1632942351633 } from '../../../migration/1632942351633-UserSchemaCreate';
-import { TokenBlackListCreate1633008133169 } from '../../../migration/1633008133169-TokenBlackListCreate';
-import { TransactionsCreate1633030060317 } from '../../../migration/1633030060317-TransactionsCreate';
-import { AddDateColumnTransaction1633102455108 } from '../../../migration/1633102455108-AddDateColumnTransaction';
-import { ExchangeRateCreate1633109423860 } from '../../../migration/1633109423860-ExchangeRateCreate';
-import { TransactionAmountChangeToDecimal1634007905832 } from '../../../migration/1634007905832-TransactionAmountChangeToDecimal';
+import {
+  ExchangeRateDao,
+  TokenBlackListDao,
+  TransactionDao,
+  UserDao,
+} from '../../../adapters/out/persistance/dao';
+import {
+  AddDateColumnTransaction1633102455108,
+  ExchangeRateCreate1633109423860,
+  TokenBlackListCreate1633008133169,
+  TransactionAmountChangeToDecimal1634007905832,
+  TransactionsCreate1633030060317,
+  UserSchemaCreate1632942351633,
+} from '../../../adapters/out/persistance/migration';
 import { environment } from './environment';
 
 export const AppDataSource = new DataSource({
@@ -20,7 +24,7 @@ export const AppDataSource = new DataSource({
   database: environment.TYPEORM_DATABASE,
   synchronize: false,
   logging: true,
-  entities: [ExchangeRate, TokenBlackList, Transaction, User],
+  entities: [ExchangeRateDao, TokenBlackListDao, TransactionDao, UserDao],
   migrations: [
     UserSchemaCreate1632942351633,
     TokenBlackListCreate1633008133169,
