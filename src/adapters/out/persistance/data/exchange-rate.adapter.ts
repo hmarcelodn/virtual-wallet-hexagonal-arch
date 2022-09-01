@@ -32,6 +32,10 @@ export class ExchangeRateAdapter implements LoadDailyExchangeRatesPort, LoadExch
       order: { id: 'DESC' },
     });
 
+    if (!exchangeRateDao) {
+      return null;
+    }
+
     return this.exchangeRateMapper.toDomain(exchangeRateDao);
   };
 }

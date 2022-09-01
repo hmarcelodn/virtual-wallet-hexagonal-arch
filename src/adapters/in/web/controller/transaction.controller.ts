@@ -3,7 +3,11 @@ import { Service } from 'typedi';
 import { body, header } from 'express-validator';
 
 import { BaseController } from './base';
-import { TransactionFillService, TransactionPayService, TransactionWithdrawService } from '../../../../application/service';
+import {
+  TransactionFillService,
+  TransactionPayService,
+  TransactionWithdrawService,
+} from '../../../../application/service';
 import { authorize, validateRequest } from '../middleware';
 
 @Service()

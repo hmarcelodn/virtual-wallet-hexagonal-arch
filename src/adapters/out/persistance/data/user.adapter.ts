@@ -11,11 +11,23 @@ export class UserAdapter {
   ) {}
 
   public findByEmail = async (email: string): Promise<User | null> => {
-    return this.userMapper.toDomain(await this.userRepository.findOne({ where: { email } }));
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return user;
+    }
+
+    return this.userMapper.toDomain(user);
   };
 
   public findById = async (id: number): Promise<User | null> => {
-    return this.userMapper.toDomain(await this.userRepository.findOne({ where: { id } }));
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      return user;
+    }
+
+    return this.userMapper.toDomain(user);
   };
 
   public save = async (user: User): Promise<User | null> => {

@@ -17,6 +17,11 @@ export class TokenBlackListAdapter implements LoadBlackListerTokenPort, CreateBl
 
   public getToken = async (token: string): Promise<TokenBlackList | null> => {
     const tokenDao = await this.tokenBlackListRepository.findOne({ where: { token } });
+
+    if (!tokenDao) {
+      return tokenDao;
+    }
+
     return this.tokenBlackListMapper.toDomain(tokenDao);
   };
 

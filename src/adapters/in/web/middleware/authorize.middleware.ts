@@ -6,7 +6,6 @@ import { NotAuthorizedError } from '../../../../application/errors';
 import { LoadBlackListerTokenPort } from '../../../../application/port/out';
 import { GENERAL } from '../../../../shared/constants';
 
-
 interface UserPayload {
   id: string;
   email: string;

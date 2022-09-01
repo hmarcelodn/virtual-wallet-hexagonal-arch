@@ -4,13 +4,21 @@ import { ExchangeRateDao } from '../dao';
 
 @Service()
 export class ExchangeRateMapper {
-  public toDomain = (exchangeRateDao: ExchangeRateDao | null): ExchangeRate => {
+  public toDomain = (exchangeRateDao: ExchangeRateDao): ExchangeRate => {
     const exchangeRate = new ExchangeRate();
+    exchangeRate.id = exchangeRateDao?.id;
+    exchangeRate.date = exchangeRateDao?.date;
+    exchangeRate.quote = exchangeRateDao?.quote;
+    exchangeRate.rate = exchangeRateDao?.rate;
     return exchangeRate;
   };
 
-  public toEntity = (exchangeRate: ExchangeRate | null): ExchangeRateDao => {
+  public toEntity = (exchangeRate: ExchangeRate): ExchangeRateDao => {
     const exchangeRateDao = new ExchangeRateDao();
+    exchangeRateDao.id = exchangeRate.id;
+    exchangeRateDao.date = exchangeRate.date;
+    exchangeRateDao.quote = exchangeRate.quote;
+    exchangeRateDao.rate = exchangeRate.rate;
     return exchangeRateDao;
   };
 }
