@@ -1,17 +1,17 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { PaymentType } from '../../domain/aggregate';
-import { TransactionService } from '../../domain/service';
+import { TYPES } from '../../shared/di/types';
 import { SummaryInputDto } from '../dto';
 import { UserNotFoundError } from '../errors';
-import { LoadUserPort } from '../port/out';
+import { LoadBalancePort, LoadUserPort } from '../port/out';
 import { ExchangeRateService } from './exchange-rate.service';
 
-@Service()
+@injectable()
 export class InformationSummaryService {
   constructor(
-    protected readonly transactionService: TransactionService,
-    protected readonly exchangeRateService: ExchangeRateService,
-    protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.LoadBalancePort) protected readonly loadBalancePort: LoadBalancePort,
+    @inject(TYPES.ExchangeRateService) protected readonly exchangeRateService: ExchangeRateService,
+    @inject(TYPES.LoadUserPort) protected readonly loadUserPort: LoadUserPort,
   ) {}
 
   public summary = async (userId: number, summaryInput: SummaryInputDto) => {
@@ -21,25 +21,25 @@ export class InformationSummaryService {
       throw new UserNotFoundError();
     }
 
-    let filledAmount = await this.transactionService.getTransactionsAmountByPeriod(
+    let filledAmount = await this.loadBalancePort.getTransactionsAmountByPeriod(
       user,
       summaryInput?.startDate,
       summaryInput.endDate,
       PaymentType.PAYMENT_FILL,
     );
-    let madeAmount = await this.transactionService.getTransactionsAmountByPeriod(
+    let madeAmount = await this.loadBalancePort.getTransactionsAmountByPeriod(
       user,
       summaryInput?.startDate,
       summaryInput.endDate,
       PaymentType.PAYMENT_MADE,
     );
-    let receivedAmount = await this.transactionService.getTransactionsAmountByPeriod(
+    let receivedAmount = await this.loadBalancePort.getTransactionsAmountByPeriod(
       user,
       summaryInput?.startDate,
       summaryInput.endDate,
       PaymentType.PAYMENT_RECEIVED,
     );
-    let withdrawAmount = await this.transactionService.getTransactionsAmountByPeriod(
+    let withdrawAmount = await this.loadBalancePort.getTransactionsAmountByPeriod(
       user,
       summaryInput?.startDate,
       summaryInput.endDate,

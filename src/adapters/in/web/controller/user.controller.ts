@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { body, header } from 'express-validator';
 
 import { BaseController } from './base';
@@ -9,15 +9,16 @@ import {
   UserSignupService,
 } from '../../../../application/service';
 import { validateRequest } from '../middleware';
+import { TYPES } from '../../../../shared/di/types';
 
-@Service()
+@injectable()
 export class UserController extends BaseController {
   public path = '/user';
 
   constructor(
-    protected readonly userSignupService: UserSignupService,
-    protected readonly userLoginService: UserLoginService,
-    protected readonly userLogoutService: UserLogoutService,
+    @inject(TYPES.UserSignupService) protected readonly userSignupService: UserSignupService,
+    @inject(TYPES.UserLoginService) protected readonly userLoginService: UserLoginService,
+    @inject(TYPES.UserLogoutService) protected readonly userLogoutService: UserLogoutService,
   ) {
     super();
 

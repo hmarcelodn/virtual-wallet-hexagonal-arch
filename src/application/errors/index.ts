@@ -7,3 +7,4 @@ export * from './user-destination.error';
 export * from './user-existing.error';
 export * from './user-invalid-username-password.error';
 export * from './user-not-found.error';
+export * from './currency-layer.error';

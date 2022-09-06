@@ -1,8 +1,8 @@
-import { Service } from 'typedi';
+import { injectable } from 'inversify';
 import { ExchangeRate } from '../../../../domain/aggregate';
 import { ExchangeRateDao } from '../dao';
 
-@Service()
+@injectable()
 export class ExchangeRateMapper {
   public toDomain = (exchangeRateDao: ExchangeRateDao): ExchangeRate => {
     const exchangeRate = new ExchangeRate();

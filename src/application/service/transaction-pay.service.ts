@@ -1,8 +1,8 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { PaymentType, Transaction } from '../../domain/aggregate';
 import { TransactionService } from '../../domain/service';
 import { AppDataSource } from '../../shared/data/config';
-import { LoadUserPort, LoadUserByEmailPort } from '../port/out';
+import { LoadUserPort, LoadUserByEmailPort, LoadBalancePort } from '../port/out';
 
 import {
   OutOfBalanceError,
@@ -10,13 +10,14 @@ import {
   UserDestinationError,
   UserNotFoundError,
 } from '../errors';
+import { TYPES } from '../../shared/di/types';
 
-@Service()
+@injectable()
 export class TransactionPayService {
   constructor(
-    protected readonly transactionService: TransactionService,
-    protected readonly loadUserPort: LoadUserPort,
-    protected readonly loadUserByEmailPort: LoadUserByEmailPort,
+    @inject(TYPES.LoadBalancePort) protected readonly loadBalancePort: LoadBalancePort,
+    @inject(TYPES.LoadUserPort) protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.LoadUserByEmailPort) protected readonly loadUserByEmailPort: LoadUserByEmailPort,
   ) {}
 
   public pay = async (value: number, srcUserId: number, destUserEmail: string): Promise<void> => {
@@ -34,7 +35,7 @@ export class TransactionPayService {
       throw new UserDestinationError();
     }
 
-    const totalBalance = await this.transactionService.getBalance(srcUser);
+    const totalBalance = await this.loadBalancePort.getBalance(srcUser);
 
     if (value > totalBalance) {
       throw new OutOfBalanceError();

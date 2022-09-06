@@ -1,8 +1,8 @@
-import { Service } from 'typedi';
+import { injectable } from 'inversify';
 import { TokenBlackList } from '../../../../domain/aggregate';
 import { TokenBlackListDao } from '../dao';
 
-@Service()
+@injectable()
 export class TokenBlackListMapper {
   public toDomain(tokenBlackListDao: TokenBlackListDao): TokenBlackList {
     const tokenBlackList = new TokenBlackList();

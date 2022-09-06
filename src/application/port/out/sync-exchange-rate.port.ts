@@ -1,3 +1,5 @@
+import { ExchangeRate } from '../../../domain/aggregate';
+
 export interface SyncExchangeRatePort {
-  sync(): void;
+  sync(): Promise<ExchangeRate[] | undefined>;
 }

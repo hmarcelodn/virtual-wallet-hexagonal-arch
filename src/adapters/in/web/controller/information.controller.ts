@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { query } from 'express-validator';
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import url from 'url';
 import { ForecastInputDto, SeriesInputDto, SummaryInputDto } from '../../../../application/dto';
 import {
@@ -9,18 +9,23 @@ import {
   InformationSeriesService,
   InformationSummaryService,
 } from '../../../../application/service';
+import { TYPES } from '../../../../shared/di/types';
 import { authorize } from '../middleware/authorize.middleware';
 import { validateRequest } from '../middleware/validation-request.middleware';
 import { BaseController } from './base';
 
-@Service()
+@injectable()
 export class InformationController extends BaseController {
   public path = '/information';
 
   constructor(
+    @inject(TYPES.InformationBalanceService)
     protected readonly informationBalanceService: InformationBalanceService,
+    @inject(TYPES.InformationSummaryService)
     protected readonly informationSummaryService: InformationSummaryService,
+    @inject(TYPES.InformationSeriesService)
     protected readonly informationSeriesService: InformationSeriesService,
+    @inject(TYPES.InformationForecastService)
     protected readonly informationForecastService: InformationForecastService,
   ) {
     super();

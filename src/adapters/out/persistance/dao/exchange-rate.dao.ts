@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('exchange_rate')
 export class ExchangeRateDao {
   constructor() {
     this.date = new Date();

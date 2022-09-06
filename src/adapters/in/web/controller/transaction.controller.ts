@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { body, header } from 'express-validator';
 
 import { BaseController } from './base';
@@ -9,14 +9,18 @@ import {
   TransactionWithdrawService,
 } from '../../../../application/service';
 import { authorize, validateRequest } from '../middleware';
+import { TYPES } from '../../../../shared/di/types';
 
-@Service()
+@injectable()
 export class TransactionController extends BaseController {
   public path = '/transactions';
 
   constructor(
+    @inject(TYPES.TransactionFillService)
     protected readonly transactionFillService: TransactionFillService,
+    @inject(TYPES.TransactionWithdrawService)
     protected readonly transactionWithdrawService: TransactionWithdrawService,
+    @inject(TYPES.TransactionPayService)
     protected readonly transactionPayService: TransactionPayService,
   ) {
     super();

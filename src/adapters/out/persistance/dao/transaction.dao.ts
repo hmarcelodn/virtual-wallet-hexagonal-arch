@@ -8,7 +8,7 @@ export enum PaymentTypeDao {
   PAYMENT_FILL = 'payment_fill',
 }
 
-@Entity()
+@Entity('transaction')
 export class TransactionDao {
   constructor() {
     this.date = new Date();

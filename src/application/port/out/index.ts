@@ -11,3 +11,5 @@ export * from './load-black-listed-token.port';
 export * from './create-black-listed-token.port';
 export * from './create-user.port';
 export * from './load-daily-exchange-rates.port';
+export * from './load-transactions-by-last-days.port';
+export * from './bulk-save-exchange-rates.port';

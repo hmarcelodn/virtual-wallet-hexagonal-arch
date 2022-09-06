@@ -1,15 +1,16 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { PaymentType, Transaction } from '../../domain/aggregate';
-import { TransactionService } from '../../domain/service';
+import { TYPES } from '../../shared/di/types';
 import { OutOfBalanceError, UserNotFoundError } from '../errors';
 import { CreateTransactionPort, LoadUserPort, LoadBalancePort } from '../port/out';
 
-@Service()
+@injectable()
 export class TransactionWithdrawService {
   constructor(
-    protected readonly transactionService: TransactionService,
-    protected readonly loadUserPort: LoadUserPort,
-    protected readonly getBalancePort: LoadBalancePort,
+    @inject(TYPES.LoadBalancePort) protected readonly loadBalancePort: LoadBalancePort,
+    @inject(TYPES.LoadUserPort) protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.LoadBalancePort) protected readonly getBalancePort: LoadBalancePort,
+    @inject(TYPES.CreateTransactionPort)
     protected readonly createTransactionPort: CreateTransactionPort,
   ) {}
 

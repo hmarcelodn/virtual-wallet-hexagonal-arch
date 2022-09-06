@@ -1,16 +1,18 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { PaymentType } from '../../domain/aggregate';
+import { TYPES } from '../../shared/di/types';
 import { ForecastInputDto, ForecastResponseDto } from '../dto';
 import { UserNotFoundError } from '../errors';
 import { LoadUserPort } from '../port/out';
 import { LoadTransactionsByLastDaysPort } from '../port/out/load-transactions-by-last-days.port';
 import { ExchangeRateService } from './exchange-rate.service';
 
-@Service()
+@injectable()
 export class InformationForecastService {
   constructor(
-    protected readonly exchangeRateService: ExchangeRateService,
-    protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.ExchangeRateService) protected readonly exchangeRateService: ExchangeRateService,
+    @inject(TYPES.LoadUserPort) protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.LoadTransactionsByLastDaysPort)
     protected readonly loadTransactionsByLastDaysPort: LoadTransactionsByLastDaysPort,
   ) {}
 

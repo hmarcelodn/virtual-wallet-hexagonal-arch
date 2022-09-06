@@ -1,8 +1,8 @@
-import { Service } from 'typedi';
+import { injectable } from 'inversify';
 import { User } from '../../../../domain/aggregate';
 import { UserDao } from '../dao';
 
-@Service()
+@injectable()
 export class UserMapper {
   public toDomain = (userDao: UserDao): User => {
     const user = new User();
@@ -12,6 +12,7 @@ export class UserMapper {
     user.userIdentity = userDao.userIdentity;
     user.password = userDao.password;
     user.birthDate = userDao.birthDate;
+    user.email = userDao.email;
 
     return user;
   };
@@ -24,6 +25,7 @@ export class UserMapper {
     userDao.userIdentity = user.userIdentity;
     userDao.password = user.password;
     userDao.birthDate = user.birthDate;
+    userDao.email = user.email;
     return userDao;
   };
 }

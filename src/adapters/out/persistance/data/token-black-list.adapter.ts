@@ -1,4 +1,4 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { TokenBlackListDao } from '../dao';
 import { AppDataSource } from '../../../../shared/data/config';
 import {
@@ -7,11 +7,14 @@ import {
 } from '../../../../application/port/out';
 import { TokenBlackList } from '../../../../domain/aggregate';
 import { TokenBlackListMapper } from '../mapper';
+import { TYPES } from '../../../../shared/di/types';
 
-@Service()
+@injectable()
 export class TokenBlackListAdapter implements LoadBlackListerTokenPort, CreateBlackListedTokenPort {
+  protected readonly tokenBlackListRepository = AppDataSource.getRepository(TokenBlackListDao);
+
   constructor(
-    protected readonly tokenBlackListRepository = AppDataSource.getRepository(TokenBlackListDao),
+    @inject(TYPES.TokenBlackListMapper)
     protected readonly tokenBlackListMapper: TokenBlackListMapper,
   ) {}
 

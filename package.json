@@ -63,7 +63,6 @@
       "pg": "^8.7.1",
       "reflect-metadata": "^0.1.10",
       "tsconfig-paths": "^3.11.0",
-      "typedi": "^0.10.0",
       "typeorm": "^0.3.7"
    },
    "devDependencies": {

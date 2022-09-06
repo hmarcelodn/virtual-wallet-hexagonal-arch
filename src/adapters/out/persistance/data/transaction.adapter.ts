@@ -1,5 +1,5 @@
-import { Service } from 'typedi';
 import { LessThan, MoreThan } from 'typeorm';
+import { inject, injectable } from 'inversify';
 import { ForecastProjectionResultDto } from '../dto';
 import { AppDataSource } from '../../../../shared/data/config';
 import { PaymentType, Transaction, User } from '../../../../domain/aggregate';
@@ -8,11 +8,12 @@ import {
   CreateTransactionPort,
   LoadPaymentTransactionsPort,
   LoadTransactionsByPeriodPort,
+  LoadTransactionsByLastDaysPort,
 } from '../../../../application/port/out';
-import { LoadTransactionsByLastDaysPort } from '../../../../application/port/out/load-transactions-by-last-days.port';
 import { PaymentTypeDao, TransactionDao } from '../dao';
+import { TYPES } from '../../../../shared/di/types';
 
-@Service()
+@injectable()
 export class TransactionAdapter
   implements
     LoadTransactionsByPeriodPort,
@@ -20,9 +21,10 @@ export class TransactionAdapter
     LoadPaymentTransactionsPort,
     LoadTransactionsByLastDaysPort
 {
+  protected readonly transactionRepository = AppDataSource.getRepository(TransactionDao);
+
   constructor(
-    protected readonly transactionRepository = AppDataSource.getRepository(TransactionDao),
-    protected readonly transactionMapper: TransactionMapper,
+    @inject(TYPES.TransactionMapper) protected readonly transactionMapper: TransactionMapper,
   ) {}
 
   public create = async (transaction: Transaction): Promise<Transaction> => {
@@ -42,7 +44,9 @@ export class TransactionAdapter
     const paymentTypeDao = type as unknown as PaymentTypeDao;
     const transactionsDao = await this.transactionRepository.find({
       where: { user, type: paymentTypeDao },
+      relations: ['user'],
     });
+
     return transactionsDao.map((tx) => this.transactionMapper.toDomain(tx));
   };
 
@@ -58,6 +62,7 @@ export class TransactionAdapter
         date: MoreThan(startDate) && LessThan(endDate),
         type: type as unknown as PaymentTypeDao,
       },
+      relations: ['user']
     });
 
     return transactionsDao.map((tx) => this.transactionMapper.toDomain(tx));

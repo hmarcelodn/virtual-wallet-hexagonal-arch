@@ -23,7 +23,7 @@ export const AppDataSource = new DataSource({
   password: environment.TYPEORM_PASSWORD,
   database: environment.TYPEORM_DATABASE,
   synchronize: false,
-  logging: true,
+  logging: false,
   entities: [ExchangeRateDao, TokenBlackListDao, TransactionDao, UserDao],
   migrations: [
     UserSchemaCreate1632942351633,

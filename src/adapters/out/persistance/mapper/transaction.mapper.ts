@@ -1,11 +1,12 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { UserMapper } from '.';
 import { PaymentType, Transaction } from '../../../../domain/aggregate';
+import { TYPES } from '../../../../shared/di/types';
 import { PaymentTypeDao, TransactionDao } from '../dao';
 
-@Service()
+@injectable()
 export class TransactionMapper {
-  constructor(private readonly userMapper: UserMapper) {}
+  constructor(@inject(TYPES.UserMapper) private readonly userMapper: UserMapper) {}
 
   public toDomain = (transactionDao: TransactionDao): Transaction => {
     const transaction = new Transaction();

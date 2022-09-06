@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import 'express-async-errors';
-import Container from 'typedi';
+import { appContainer } from './shared/di';
 import { App } from './app';
+import { TYPES } from './shared/di/types';
 
 import { AppDataSource } from './shared/data/config';
 import {
@@ -12,16 +13,15 @@ import {
 } from './adapters/in/web/controller';
 
 const app = new App(Number(process.env.PORT) || 3000, [
-  Container.get(UserController),
-  Container.get(TransactionController),
-  Container.get(InformationController),
-  Container.get(HomeController),
+  appContainer.get<UserController>(TYPES.UserController),
+  appContainer.get<TransactionController>(TYPES.TransactionController),
+  appContainer.get<InformationController>(TYPES.InformationController),
+  appContainer.get<HomeController>(TYPES.HomeController),
 ]);
 
-(async () => await AppDataSource.initialize())();
-
-(() => {
-  app.listen();
+(async () => { 
+  await AppDataSource.initialize()
+  await app.listen();
 })();
 
 process.on('SIGINT', () => {

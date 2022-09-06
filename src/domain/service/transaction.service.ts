@@ -1,14 +1,18 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import {
+  LoadBalancePort,
   LoadPaymentTransactionsPort,
   LoadTransactionsByPeriodPort,
 } from '../../application/port/out';
+import { TYPES } from '../../shared/di/types';
 import { PaymentType, Transaction, User } from '../aggregate';
 
-@Service()
-export class TransactionService {
+@injectable()
+export class TransactionService implements LoadBalancePort {
   constructor(
+    @inject(TYPES.LoadPaymentTransactionsPort)
     protected readonly loadPaymentTransactionsPort: LoadPaymentTransactionsPort,
+    @inject(TYPES.LoadTransactionsByPeriodPort)
     protected readonly loadTransactionsByPeriodPort: LoadTransactionsByPeriodPort,
   ) {}
 
@@ -47,7 +51,7 @@ export class TransactionService {
     startDate: Date,
     endDate: Date,
     type: PaymentType,
-  ) => {
+  ): Promise<number> => {
     const paymentTrx = await this.getTransactionsByPeriod(user, startDate, endDate, type);
     return paymentTrx.reduce(this.transactionReducer, 0);
   };
@@ -57,7 +61,7 @@ export class TransactionService {
     startDate: Date,
     endDate: Date,
     type: PaymentType,
-  ) => {
+  ): Promise<Transaction[]> => {
     return this.loadTransactionsByPeriodPort.getTransactionsByPeriod(
       user,
       startDate,

@@ -1,14 +1,17 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import * as CryptoJS from 'crypto-js';
 import * as jwt from 'jsonwebtoken';
 import { InvalidUsernamePasswordError } from '../errors';
 import { GENERAL } from '../../shared/constants';
 import { LoadUserByEmailPort } from '../port/out';
 import { TokenResponseDto, UserLoginDto } from '../dto';
+import { TYPES } from '../../shared/di/types';
 
-@Service()
+@injectable()
 export class UserLoginService {
-  constructor(protected readonly loadUserByEmail: LoadUserByEmailPort) {}
+  constructor(
+    @inject(TYPES.LoadUserByEmailPort) protected readonly loadUserByEmail: LoadUserByEmailPort,
+  ) {}
 
   public login = async (model: UserLoginDto): Promise<TokenResponseDto> => {
     const user = await this.loadUserByEmail.findByEmail(model.email);

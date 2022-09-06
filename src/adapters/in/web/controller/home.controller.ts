@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { Service } from 'typedi';
+import { injectable } from 'inversify';
 import { BaseController } from './base';
 
-@Service()
+@injectable()
 export class HomeController extends BaseController {
   public path = '/';
 

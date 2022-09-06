@@ -1,18 +1,19 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import * as _ from 'lodash';
 import { UserNotFoundError } from '../errors';
 import { ExchangeRateService } from './exchange-rate.service';
-import { TransactionService } from '../../domain/service';
 import { SeriesInputDto, SeriesResultResponseDto } from '../dto';
 import { PaymentType, Transaction } from '../../domain/aggregate';
-import { LoadUserPort } from '../port/out';
+import { LoadBalancePort, LoadUserPort } from '../port/out';
+import { TYPES } from '../../shared/di/types';
+import { GENERAL } from '../../shared/constants';
 
-@Service()
+@injectable()
 export class InformationSeriesService {
   constructor(
-    protected readonly exchangeRateService: ExchangeRateService,
-    protected readonly transactionService: TransactionService,
-    protected readonly loadUserPort: LoadUserPort,
+    @inject(TYPES.ExchangeRateService) protected readonly exchangeRateService: ExchangeRateService,
+    @inject(TYPES.LoadBalancePort) protected readonly loadBalancePort: LoadBalancePort,
+    @inject(TYPES.LoadUserPort) protected readonly loadUserPort: LoadUserPort,
   ) {}
 
   public series = async (
@@ -20,34 +21,39 @@ export class InformationSeriesService {
     seriesInput: SeriesInputDto,
   ): Promise<SeriesResultResponseDto> => {
     const user = await this.loadUserPort.findById(userId);
-    const exchangeRate = await this.exchangeRateService.getExchangeRate(seriesInput.currency);
+    let currencyRate = 1;
+
+    if (GENERAL.DEFAULT_CURRENCY !== seriesInput.currency) {
+      const exchangeRate = await this.exchangeRateService.getExchangeRate(seriesInput.currency); 
+      currencyRate = exchangeRate.rate;
+    }
 
     if (!user) {
       throw new UserNotFoundError();
     }
 
-    const filledTrx = this.transactionService.getTransactionsByPeriod(
+    const filledTrx = this.loadBalancePort.getTransactionsByPeriod(
       user,
       seriesInput.startDate,
       seriesInput.endDate,
       PaymentType.PAYMENT_FILL,
     );
 
-    const madeTrx = this.transactionService.getTransactionsByPeriod(
+    const madeTrx = this.loadBalancePort.getTransactionsByPeriod(
       user,
       seriesInput.startDate,
       seriesInput.endDate,
       PaymentType.PAYMENT_MADE,
     );
 
-    const receivedTrx = this.transactionService.getTransactionsByPeriod(
+    const receivedTrx = this.loadBalancePort.getTransactionsByPeriod(
       user,
       seriesInput.startDate,
       seriesInput.endDate,
       PaymentType.PAYMENT_RECEIVED,
     );
 
-    const withdrawTrx = this.transactionService.getTransactionsByPeriod(
+    const withdrawTrx = this.loadBalancePort.getTransactionsByPeriod(
       user,
       seriesInput.startDate,
       seriesInput.endDate,
@@ -89,19 +95,19 @@ export class InformationSeriesService {
       });
 
       seriesResultResponse.payments_received.push(
-        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_RECEIVED) || 0) * exchangeRate.rate,
+        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_RECEIVED) || 0) * currencyRate,
       );
 
       seriesResultResponse.payments_made.push(
-        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_MADE) || 0) * exchangeRate.rate,
+        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_MADE) || 0) * currencyRate,
       );
 
       seriesResultResponse.withdrawn.push(
-        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_WITHDRAW) || 0) * exchangeRate.rate,
+        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_WITHDRAW) || 0) * currencyRate,
       );
 
       seriesResultResponse.filled.push(
-        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_FILL) || 0) * exchangeRate.rate,
+        (trxByPaymentTypeMap.get(PaymentType.PAYMENT_FILL) || 0) * currencyRate,
       );
 
       seriesResultResponse.dates.push(trxDate);

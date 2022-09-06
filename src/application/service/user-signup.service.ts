@@ -1,5 +1,5 @@
 import PasswordValidator from 'password-validator';
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import * as CryptoJS from 'crypto-js';
 import { PasswordPolicyError, UserExistingError } from '../errors';
 import { User } from '../../domain/aggregate';
@@ -7,12 +7,13 @@ import { UserSignupDto } from '../dto';
 import { GENERAL } from '../../shared/constants';
 import { LoadUserByEmailPort } from '../port/out';
 import { CreateUserPort } from '../port/out/create-user.port';
+import { TYPES } from '../../shared/di/types';
 
-@Service()
+@injectable()
 export class UserSignupService {
   constructor(
-    protected readonly loadUserByEmailPort: LoadUserByEmailPort,
-    protected readonly createUserPort: CreateUserPort,
+    @inject(TYPES.LoadUserByEmailPort) protected readonly loadUserByEmailPort: LoadUserByEmailPort,
+    @inject(TYPES.CreateUserPort) protected readonly createUserPort: CreateUserPort,
   ) {}
 
   signup = async (userSignupInput: UserSignupDto): Promise<User | null> => {

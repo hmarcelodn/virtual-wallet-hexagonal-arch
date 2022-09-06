@@ -1,12 +1,14 @@
-import { Service } from 'typedi';
+import { inject, injectable } from 'inversify';
 import { TokenBlackList } from '../../domain/aggregate';
-import { LoadBlackListerTokenPort } from '../port/out';
-import { CreateBlackListedTokenPort } from '../port/out/create-black-listed-token.port';
+import { TYPES } from '../../shared/di/types';
+import { LoadBlackListerTokenPort, CreateBlackListedTokenPort } from '../port/out';
 
-@Service()
+@injectable()
 export class UserLogoutService {
   constructor(
+    @inject(TYPES.LoadBlackListerTokenPort)
     protected readonly getBlackListedTokenPort: LoadBlackListerTokenPort,
+    @inject(TYPES.CreateBlackListedTokenPort)
     protected readonly createBlackListedTokenPort: CreateBlackListedTokenPort,
   ) {}
 
